@@ -6,7 +6,6 @@ import {AppComponent} from './app.component';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {ServiceWorkerModule} from '@angular/service-worker';
 import {environment} from '../environments/environment';
-import {IgxBottomNavModule} from 'igniteui-angular';
 import {FirstScreenComponent} from './first-screen/first-screen.component';
 import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 import {MatButtonModule} from '@angular/material/button';
@@ -76,7 +75,6 @@ import { SceneryButtonMockComponent } from './commons/scene/scenery-button-mock/
     BrowserModule,
     AppRoutingModule,
     BrowserAnimationsModule,
-    IgxBottomNavModule,
     ServiceWorkerModule.register('ngsw-worker.js', {enabled: environment.production}),
     MatSlideToggleModule,
     MatButtonModule,

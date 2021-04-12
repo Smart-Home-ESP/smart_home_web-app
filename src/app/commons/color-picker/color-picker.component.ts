@@ -8,7 +8,7 @@ import {map, takeUntil} from 'rxjs/operators';
 import {DeviceService} from '../../service/device.service';
 import {Subject} from 'rxjs';
 import {DeviceConfiguration} from '../../models/DeviceConfiguration';
-const _ = require('lodash');
+import * as _ from 'lodash';
 
 export interface DialogData {
   deviceConfiguration: DeviceConfiguration;

@@ -2,7 +2,7 @@
   width: 150px;
   height: 150px;
   margin: 15px;
-  border-radius:15%
+  border-radius:15%;
 }
 
 .turnedOn {
@@ -30,4 +30,5 @@
 
 .device{
   font-weight: bold;
+  font-family: 'Helvetica', 'Arial', sans-serif;
 }
