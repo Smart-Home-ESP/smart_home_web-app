@@ -68,6 +68,7 @@ export class LightBulbButtonComponent implements OnInit, OnDestroy {
 
 
   connect_callback(message) {
+    console.log("message");
     console.log(message);
     if (message) {
       this.msg.push(message);
@@ -110,6 +111,7 @@ export class LightBulbButtonComponent implements OnInit, OnDestroy {
     this.configuration.deviceStatus = this.toggle ? 'On' : 'Off';
     this.img = this.toggle ? 'assets/svg/lights/light_on.svg' : 'assets/svg/lights/light_off.svg';
     this.emitData(this.statusChange, this.configuration.deviceStatus);
+    console.log(this.configuration.deviceStatus)
   }
 
   emitData(emitter: EventEmitter<any>, data: any): void {
@@ -142,7 +144,7 @@ export class LightBulbButtonComponent implements OnInit, OnDestroy {
         // data: {status: this.configuration.deviceStatus, hsv: this.hsv, serial: this.configuration.serial}
       });
       bottomSheet.afterDismissed().subscribe(data =>
-        this.firstScreen.apiHandler()
+        this.firstScreen.changeRoom(this.configuration.roomID)
       );
     } else if (this.configuration.serial !== undefined && this.scenery !== undefined) {
       const dialogRef = this.dialog.open(ColorPickerSceneriesComponent, {

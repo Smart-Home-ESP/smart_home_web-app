@@ -25,28 +25,60 @@
   </mat-menu>
 
   <div class="room-name-container">
-    <p class="room-name" *ngIf="room!= null">{{room.roomName}}</p>
+    <!--    <p class="room-name" *ngIf="room!= null">{{room.roomName}}</p>-->
   </div>
-  <p class="category">Scenerie</p>
-  <div class="grid-container scenes">
-    <ng-container *ngFor="let scene of Sceneries">
-          <app-scenes-button
-            [sceneryConfig]="scene"
-          [roomID]="room.id">
-          </app-scenes-button>
-    </ng-container>
+  <ng-container *ngFor="let r of roomsList">
+    <mat-card class="card">
+      <mat-card-header>
+        <div mat-card-avatar class="header-image">
+          <mat-icon class="room-icon">meeting_room</mat-icon>
+        </div>
+        <mat-card-title *ngIf="r!= null">{{r.roomName}}</mat-card-title>
 
+        <mat-card-subtitle *ngFor="let button of Buttons">
+          <ng-container *ngIf="button.deviceType === 'temperature'">
+            <mat-icon class="subtitle-icon">wb_sunny</mat-icon>
+            {{button.temperature}} °C |
+            <mat-icon class="subtitle-icon">wb_cloudy</mat-icon>
+            {{button.humidity}}%
+          </ng-container>
+        </mat-card-subtitle>
 
-  </div>
-  <p class="category">Urządzenia</p>
-  <div class="row">
-    <ng-container  *ngFor="let button of Buttons">
-      <app-light-bulb-button
-        [configuration]="button"
-        [scenery]="false"
-        (statusChange)="statusChanged($event, button.serial)"
-        (hsvChange)="hsvChanged($event, button.serial)"></app-light-bulb-button>
-    </ng-container>
-  </div>
+        <button mat-icon-button>
+          <mat-icon>more_vert</mat-icon>
+        </button>
+        <button mat-icon-button class="power-button">
+          <mat-icon>power_settings_new</mat-icon>
+        </button>
+      </mat-card-header>
+      <mat-card-content>
+        <p class="category">Scenerie</p>
+        <div class="grid-container scenes">
+          <ng-container *ngFor="let scene of Sceneries">
+            <app-scenes-button
+              *ngIf="r.id === scene.roomID"
+              [sceneryConfig]="scene"
+              [roomID]="room.id">
+            </app-scenes-button>
+          </ng-container>
+
+        </div>
+        <p class="category">Urządzenia</p>
+        <div class="row">
+          <ng-container *ngFor="let button of Buttons">
+            <app-light-bulb-button
+              *ngIf="r.id === button.roomID"
+              [configuration]="button"
+              [scenery]="false"
+              (statusChange)="statusChanged($event, button.serial)"
+              (hsvChange)="hsvChanged($event, button.serial)">
+            </app-light-bulb-button>
+          </ng-container>
+        </div>
+      </mat-card-content>
+      <mat-card-actions>
+      </mat-card-actions>
+    </mat-card>
+  </ng-container>
 </div>
 

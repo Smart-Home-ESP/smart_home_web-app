@@ -15,6 +15,11 @@ export class ApiService {
     return this.httpClient.get(environment.serverURL + `/getDevices`, {params});
   }
 
+  public getAllDevices(){
+    return this.httpClient.get(environment.serverURL + `/devices`);
+  }
+
+
   public addDevice(setSerial: number, deviceType: string, setName: string, roomID: number){
     const message = {
       serial: setSerial,

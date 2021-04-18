@@ -46,6 +46,8 @@ import { DeviceSelectorDialogComponent } from './commons/dialogs/device-selector
 import { ColorPickerSceneriesComponent } from './commons/color-picker-sceneries/color-picker-sceneries.component';
 import { LightBulbButtonMockComponent } from './commons/light-bulb/light-bulb-button-mock/light-bulb-button-mock.component';
 import { SceneryButtonMockComponent } from './commons/scene/scenery-button-mock/scenery-button-mock.component';
+import {MatCardModule} from '@angular/material/card';
+
 
 
 @NgModule({
@@ -97,7 +99,8 @@ import { SceneryButtonMockComponent } from './commons/scene/scenery-button-mock/
     MatTableModule,
     MatOptionModule,
     MatSelectModule,
-    CommonModule
+    CommonModule,
+    MatCardModule
   ],
   providers: [],
   bootstrap: [AppComponent]

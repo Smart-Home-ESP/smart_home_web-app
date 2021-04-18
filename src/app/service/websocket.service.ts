@@ -25,7 +25,6 @@ export class WebsocketService implements OnDestroy{
          passcode: 'password',
        },
        debug: function (str) {
-         console.log(str);
        },
        reconnectDelay: 5000,
        heartbeatIncoming: 4000,
@@ -34,7 +33,6 @@ export class WebsocketService implements OnDestroy{
      this.client.activate();
      this.state = new BehaviorSubject<SocketClientState>(SocketClientState.ATTEMPTING);
      this.client.onConnect = (frame) => {
-       console.log('frame: ', frame);
        this.state.next(SocketClientState.CONNECTED);
      };
    }

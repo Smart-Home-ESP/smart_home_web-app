@@ -8,8 +8,10 @@ export class DeviceConfiguration {
   floatingStatus: string;
   floatingSpeed: number;
   deviceConnectionStatus: string;
-  roomID: string;
+  roomID: number;
   deviceType: string;
+  temperature ?: string
+  humidity ?: string
 
   constructor(body) {
     this.serial = body.serial;

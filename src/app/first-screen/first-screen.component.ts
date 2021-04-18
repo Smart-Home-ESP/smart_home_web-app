@@ -28,6 +28,8 @@ export class FirstScreenComponent implements OnInit {
   Buttons: Array<DeviceConfiguration>;
   Sceneries: Array<SceneryConfiguration>;
   roomsList: Array<RoomConfiguration>;
+  allRoomsList: Array<RoomConfiguration>;
+  favoritesCheck: boolean;
   private unsubscribeSubject: Subject<void> = new Subject<void>();
 
   constructor(
@@ -37,17 +39,22 @@ export class FirstScreenComponent implements OnInit {
     private roomService: RoomService,
     private sceneryService: SceneryService
   ) {
-      this.room = null;
+    this.room = null;
   }
 
   ngOnInit(): void {
-    this.roomService
-      .roomConf()
-      .pipe(map(roomConf => this.roomsListChange(roomConf)))
-      .subscribe();
+    // this.roomService
+    //   .roomConf()
+    //   .pipe(map(roomConf => this.roomsListChange(roomConf)))
+    //   .subscribe();
+
+    this.roomService.getAllRooms().subscribe((data: Array<RoomConfiguration>) => {
+      this.roomsList = data;
+    });
+    this.getAllDevices();
   }
 
-  roomChangeResubscribe(roomID: number){
+  roomChangeResubscribe(roomID: number) {
     this.unsubscribeSubject.next();
     this.unsubscribeSubject.complete();
     this.unsubscribeSubject = new Subject<void>();
@@ -57,27 +64,26 @@ export class FirstScreenComponent implements OnInit {
       .subscribe();
   }
 
-  sceneriesListChange(sceneriesList: Array<SceneryConfiguration>){
-    console.log("sceneriesList: ", sceneriesList)
+  sceneriesListChange(sceneriesList: Array<SceneryConfiguration>) {
     this.Sceneries = sceneriesList;
   }
 
-  roomsListChange(roomsList: Array<RoomConfiguration>){
+  roomsListChange(roomsList: Array<RoomConfiguration>) {
     this.roomsList = roomsList;
-    if (this.room == null){
+    if (this.room == null) {
       const main = roomsList.find(ele => ele.main === 'yes');
-      if (main !== undefined){
+      if (main !== undefined) {
         this.room = main;
-      }else if (Object.keys(roomsList).length !== 0){
+      } else if (Object.keys(roomsList).length !== 0) {
         this.room = roomsList[0];
-      }else{
+      } else {
         this.room = null;
         this.Buttons = null;
       }
-      this.apiHandler();
-    }else{
+      this.getAllDevices();
+    } else {
       const newChosen = roomsList.find(ele => ele.id === this.room.id);
-      if (newChosen.roomName !== this.room.roomName){
+      if (newChosen.roomName !== this.room.roomName) {
         this.room = newChosen;
       }
     }
@@ -85,24 +91,48 @@ export class FirstScreenComponent implements OnInit {
   }
 
 
-  public apiHandler() {
-    if (this.room != null){
-      this.apiService.getDevices(this.room.id).subscribe((data: Array<DeviceConfiguration>) => {
-        this.Buttons = data;
-      });
-    }
+  public changeRoom(roomId: number) {
+    this.apiService.getDevices(roomId).subscribe((data: Array<DeviceConfiguration>) => {
+      this.Buttons = data;
+    });
+    this.roomService.getRoomById(roomId).subscribe((data: RoomConfiguration) => {
+      this.roomsList = [data];
+    });
+  }
+
+  //TODO fix in backend - add favorites; for now get all
+  public changeToFavorites() {
+    this.apiService.getAllDevices().subscribe((data: Array<DeviceConfiguration>) => {
+      this.Buttons = data;
+    });
+    this.roomService.getAllRooms().subscribe((data: Array<RoomConfiguration>) => {
+      this.roomsList = data;
+    });
+  }
+
+
+  public getAllDevices() {
+    this.apiService.getAllDevices().subscribe((data: Array<DeviceConfiguration>) => {
+      this.Buttons = data;
+    });
   }
 
   setRoom(room: RoomConfiguration): void {
     this._bottomSheet.dismiss(room);
+    this.changeRoom(room.id)
   }
 
-  statusChanged(status: string, deviceSerial: number){
+  setFavorites(): void {
+    this.favoritesCheck = true;
+    this._bottomSheet.dismiss();
+
+  }
+
+  statusChanged(status: string, deviceSerial: number) {
     _.set(_.find(this.Buttons, {serial: deviceSerial}), 'deviceStatus', status);
   }
 
-  hsvChanged(hsv: Array<number>, deviceSerial: number){
-    console.log('hsv: ', hsv);
+  hsvChanged(hsv: Array<number>, deviceSerial: number) {
     _.set(_.find(this.Buttons, {serial: deviceSerial}), 'hue', hsv[0]);
     _.set(_.find(this.Buttons, {serial: deviceSerial}), 'saturation', hsv[1]);
     _.set(_.find(this.Buttons, {serial: deviceSerial}), 'brightness', hsv[2]);
@@ -114,7 +144,7 @@ export class FirstScreenComponent implements OnInit {
 
 
   openSceneDialog() {
-    this.dialog.open(SceneDialogComponent, {restoreFocus: false, data: {devicesList: this.Buttons, room: this.room }});
+    this.dialog.open(SceneDialogComponent, {restoreFocus: false, data: {devicesList: this.Buttons, room: this.room}});
 
     // Manually restore focus to the menu trigger since the element that
     // opens the dialog won't be in the DOM any more when the dialog closes.
@@ -123,9 +153,12 @@ export class FirstScreenComponent implements OnInit {
   }
 
   openAccessoryDialog() {
-    const dialogRef = this.dialog.open(AccesoryDialogComponent, {restoreFocus: false, data: {roomsList: this.roomsList}});
+    const dialogRef = this.dialog.open(AccesoryDialogComponent, {
+      restoreFocus: false,
+      data: {roomsList: this.roomsList}
+    });
     dialogRef.afterClosed().subscribe(data =>
-      this.apiHandler()
+      this.getAllDevices()
     );
     // Manually restore focus to the menu trigger since the element that
     // opens the dialog won't be in the DOM any more when the dialog closes.
@@ -136,13 +169,18 @@ export class FirstScreenComponent implements OnInit {
 
   openBottomSheet(): void {
     const bottomSheetRef = this._bottomSheet.open(BottomSheetComponent, {
-      data: {roomsList: this.roomsList}
+      data: {roomsList: this.allRoomsList}
     });
     bottomSheetRef.afterDismissed().subscribe((dataFromChild) => {
+
       if (dataFromChild != null) {
         this.room = dataFromChild;
-        this.apiHandler();
+        this.getAllDevices();
         this.roomChangeResubscribe(this.room.id);
+        this.changeRoom(this.room.id)
+      } else {
+        this.changeToFavorites();
+        this.favoritesCheck = false;
       }
     });
   }

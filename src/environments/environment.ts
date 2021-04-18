@@ -5,7 +5,7 @@
 export const environment = {
   production: false,
   // serverURL: 'http://192.168.0.16:9999',
-  serverURL: 'http://0.0.0.0:9999',
+  serverURL: 'http://0.0.0.0:9999/',
   websocketURL: 'ws://0.0.0.0:9999/mywebsocket/websocket'
 };
 

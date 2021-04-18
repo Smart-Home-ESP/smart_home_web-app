@@ -21,6 +21,16 @@ export class RoomService {
     return this.httpClient.post(environment.serverURL + `/addRoom`, message).subscribe(data => console.log(data));
   }
 
+  public getRoomById(roomID: number){
+    const params = new HttpParams().set('roomID', String(roomID));
+    return this.httpClient.get(environment.serverURL + `/getRoomById`, {params});
+  }
+
+
+  public getAllRooms(){
+    return this.httpClient.get(environment.serverURL + `/getAllRooms`);
+  }
+
   public deleteRoom(roomID: number){
     return this.httpClient.delete(environment.serverURL + `/deleteRoom/` + roomID).subscribe(data => console.log(data));
   }
